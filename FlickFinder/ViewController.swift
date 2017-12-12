@@ -54,8 +54,17 @@ class ViewController: UIViewController {
         if !phraseTextField.text!.isEmpty {
             photoTitleLabel.text = "Searching..."
             // TODO: Set necessary parameters!
-            let methodParameters: [String: AnyObject] = [:]
-            displayImageFromFlickrBySearch(methodParameters)
+            let methodParameters: [String: String] = [
+                Constants.FlickrParameterKeys.Method: Constants.FlickrParameterValues.SearchMethod,
+                Constants.FlickrParameterKeys.APIKey: Constants.FlickrParameterValues.APIKey,
+                Constants.FlickrParameterKeys.Text: phraseTextField.text!,
+                Constants.FlickrParameterKeys.SafeSearch: Constants.FlickrParameterValues.UseSafeSearch,
+                Constants.FlickrParameterKeys.Extras: Constants.FlickrParameterValues.MediumURL,
+                Constants.FlickrParameterKeys.Format: Constants.FlickrParameterValues.ResponseFormat,
+                Constants.FlickrParameterKeys.NoJSONCallback: Constants.FlickrParameterValues.DisableJSONCallback
+            ]
+                
+            displayImageFromFlickrBySearch(methodParameters as [String : AnyObject])
         } else {
             setUIEnabled(true)
             photoTitleLabel.text = "Phrase Empty."
@@ -63,6 +72,20 @@ class ViewController: UIViewController {
     }
     
     @IBAction func searchByLatLon(_ sender: AnyObject) {
+        
+        
+        let boundingBox: () -> String  = {
+            
+            guard let longitude = Double(self.longitudeTextField.text!), let latitude = Double(self.latitudeTextField.text!) else { return "0,0,0,0" }
+            
+            let minLon = max(longitude - Constants.Flickr.SearchBBoxHalfWidth, Constants.Flickr.SearchLonRange.0)
+            let minLat = max(latitude - Constants.Flickr.SearchBBoxHalfHeight, Constants.Flickr.SearchLatRange.0)
+            
+            let maxLon = min(longitude + Constants.Flickr.SearchBBoxHalfWidth, Constants.Flickr.SearchLonRange.1)
+            let maxLat = min(latitude + Constants.Flickr.SearchBBoxHalfHeight, Constants.Flickr.SearchLatRange.1)
+            
+            return "\(minLon),\(minLat),\(maxLon),\(maxLat)"
+        }
 
         userDidTapView(self)
         setUIEnabled(false)
@@ -70,8 +93,17 @@ class ViewController: UIViewController {
         if isTextFieldValid(latitudeTextField, forRange: Constants.Flickr.SearchLatRange) && isTextFieldValid(longitudeTextField, forRange: Constants.Flickr.SearchLonRange) {
             photoTitleLabel.text = "Searching..."
             // TODO: Set necessary parameters!
-            let methodParameters: [String: AnyObject] = [:]
-            displayImageFromFlickrBySearch(methodParameters)
+            let methodParameters: [String: String] = [
+                Constants.FlickrParameterKeys.Method: Constants.FlickrParameterValues.SearchMethod,
+                Constants.FlickrParameterKeys.APIKey: Constants.FlickrParameterValues.APIKey,
+                Constants.FlickrParameterKeys.BoundingBox: boundingBox(),
+                Constants.FlickrParameterKeys.SafeSearch: Constants.FlickrParameterValues.UseSafeSearch,
+                Constants.FlickrParameterKeys.Extras: Constants.FlickrParameterValues.MediumURL,
+                Constants.FlickrParameterKeys.Format: Constants.FlickrParameterValues.ResponseFormat,
+                Constants.FlickrParameterKeys.NoJSONCallback: Constants.FlickrParameterValues.DisableJSONCallback
+            ]
+            
+            displayImageFromFlickrBySearch(methodParameters as [String : AnyObject])
         }
         else {
             setUIEnabled(true)
@@ -83,27 +115,32 @@ class ViewController: UIViewController {
     
     private func displayImageFromFlickrBySearch(_ methodParameters: [String: AnyObject]) {
         
-        print(flickrURLFromParameters(methodParameters))
-        
-        // TODO: Make request to Flickr!
-    }
-    
-    // MARK: Helper for Creating a URL from Parameters
-    
-    private func flickrURLFromParameters(_ parameters: [String: AnyObject]) -> URL {
-        
-        var components = URLComponents()
-        components.scheme = Constants.Flickr.APIScheme
-        components.host = Constants.Flickr.APIHost
-        components.path = Constants.Flickr.APIPath
-        components.queryItems = [URLQueryItem]()
-        
-        for (key, value) in parameters {
-            let queryItem = URLQueryItem(name: key, value: "\(value)")
-            components.queryItems!.append(queryItem)
-        }
-        
-        return components.url!
+        RequestHandler.doFor(Util.createURL(with: methodParameters), in: self, onCompletion: { data in
+            
+            let dictionaryResult = data as! FKDictionary
+            
+            if let photosDictionary = dictionaryResult[Constants.FlickrResponseKeys.Photos] as? FKDictionary, let photoArray = photosDictionary[Constants.FlickrResponseKeys.Photo] as? FKArray {
+                let randomPhotoIndex = Int(arc4random_uniform(UInt32(photoArray.count)))
+                let photoDictionary = photoArray[randomPhotoIndex] as [String:AnyObject]
+                
+                if let imageUrlString = photoDictionary[Constants.FlickrResponseKeys.MediumURL] as? String, let photoTitle = photoDictionary[Constants.FlickrResponseKeys.Title] as? String {
+                    let imageURL = URL(string: imageUrlString)
+                    if let imageData = try? Data(contentsOf: imageURL!) {
+                        performUIUpdatesOnMain {
+                            self.photoImageView.image = UIImage(data: imageData)
+                            self.photoTitleLabel.text = photoTitle
+                            self.setUIEnabled(true)
+                        }
+                    } else {
+                        Util.showAlert(for: "Image does not exist at \(String(describing: imageURL))", in: self)
+                    }
+                }
+            }
+        }, onError: {
+            performUIUpdatesOnMain {
+                self.setUIEnabled(true)
+            }
+        })
     }
 }
 

@@ -14,6 +14,8 @@
 		A9A3A21A1BEBB46B009BE8E1 /* GCDBlackBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A3A2191BEBB46B009BE8E1 /* GCDBlackBox.swift */; };
 		A9A3A2241BEBD15B009BE8E1 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A3A2231BEBD15B009BE8E1 /* Constants.swift */; };
 		A9FA133B1D1AB5F300B5F46E /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A9FA13391D1AB5F300B5F46E /* LaunchScreen.xib */; };
+		CE5FAD0D1FDF6A5B00CD4ADD /* RequestHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5FAD0C1FDF6A5B00CD4ADD /* RequestHandler.swift */; };
+		CE5FAD0F1FDF6A9700CD4ADD /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5FAD0E1FDF6A9700CD4ADD /* Util.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +28,8 @@
 		A9A3A2191BEBB46B009BE8E1 /* GCDBlackBox.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GCDBlackBox.swift; sourceTree = "<group>"; };
 		A9A3A2231BEBD15B009BE8E1 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		A9FA133A1D1AB5F300B5F46E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		CE5FAD0C1FDF6A5B00CD4ADD /* RequestHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestHandler.swift; sourceTree = "<group>"; };
+		CE5FAD0E1FDF6A9700CD4ADD /* Util.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +85,8 @@
 		A9A3A21C1BEBB47E009BE8E1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				CE5FAD0E1FDF6A9700CD4ADD /* Util.swift */,
+				CE5FAD0C1FDF6A5B00CD4ADD /* RequestHandler.swift */,
 				A9A3A2131BEBB443009BE8E1 /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -159,6 +165,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				A9A3A20A1BEBB443009BE8E1 /* ViewController.swift in Sources */,
+				CE5FAD0F1FDF6A9700CD4ADD /* Util.swift in Sources */,
+				CE5FAD0D1FDF6A5B00CD4ADD /* RequestHandler.swift in Sources */,
 				A9A3A21A1BEBB46B009BE8E1 /* GCDBlackBox.swift in Sources */,
 				A9A3A2081BEBB443009BE8E1 /* AppDelegate.swift in Sources */,
 				A9A3A2241BEBD15B009BE8E1 /* Constants.swift in Sources */,
